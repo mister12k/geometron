@@ -27,6 +27,7 @@ public class PlayerShape : MonoBehaviour {
 		Vector3 tempTarget = new Vector3 ();
 		if (this.transform.parent.name.Equals("Selected")) {
 			
+            // Movement of a shape
 			if (targetPath.Count > 0) {
 				tempTarget = targetPath [0];
 
@@ -54,10 +55,17 @@ public class PlayerShape : MonoBehaviour {
 				} else {
 					if (transform.parent.position == target) {
 						this.GetComponent<Animator> ().SetBool ("moving", false);
-					}
+                    }
 					targetPath.RemoveAt (0);
 				}
 			}
+            
+
+            else if(true){
+
+            }
+
+
 		}
     }
 
@@ -70,7 +78,7 @@ public class PlayerShape : MonoBehaviour {
 		}
     }
 
-	/**
+	/** 
 	 * 	Changes the colour of the shape when moving the mouse away of it if not selected
 	 */ 
     public void OnMouseExit() {
@@ -80,19 +88,20 @@ public class PlayerShape : MonoBehaviour {
     }
 
 	/**
-	 * 	Changes the colour of the shape after selecting it
+	 * 	Changes the colour of the shape after selecting it, sets this as the selected shape and calls for the UI elements to be set accordingly
 	 */ 
 	public void OnMouseDown() {
-		if (!GameObject.Find ("Selected").GetComponentInChildren<Animator> ().GetBool ("moving")) {
-			if (GameObject.Find ("Selected") != null) {
-				GameObject.Find ("Selected").transform.GetChild (0).gameObject.GetComponent<Renderer> ().material.color = Color.white;
-				GameObject.Find ("Selected").name = "Player";
-			}
-
-			this.transform.parent.name = "Selected";
-			GameObject.Find ("Main Camera").GetComponent<ButtonManager> ().restoreMoveButton ();
-			this.GetComponent<Renderer> ().material.color = Constants.PURPLE;
+		if (GameObject.Find ("Selected") != null) {
+            if (GameObject.Find("Selected").GetComponentInChildren<Animator>().GetBool("moving")) {
+                return;
+            }
+			GameObject.Find ("Selected").transform.GetChild (0).gameObject.GetComponent<Renderer> ().material.color = Color.white;
+			GameObject.Find ("Selected").name = "Player";
 		}
+
+        this.transform.parent.name = "Selected";
+        GameObject.Find("Main Camera").GetComponent<ButtonManager>().SetButtons();
+        this.GetComponent<Renderer> ().material.color = Constants.PURPLE;
 	}
   
 	/**

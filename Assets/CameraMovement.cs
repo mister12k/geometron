@@ -20,10 +20,19 @@ public class CameraMovement : MonoBehaviour {
 			transform.RotateAround(Vector3.zero,Vector3.up,rotX);
 		}
 
-		if (Input.GetKey (KeyCode.W)) {
-			transform.Translate (Vector3.forward * Time.deltaTime * cameraSpeed);
+        float zoom = Input.GetAxis("Mouse ScrollWheel");
+
+        if (zoom > 0f) {
+            transform.Translate(Vector3.forward * Time.deltaTime * cameraSpeed * 20f);
+        } else if(zoom < 0f) {
+            transform.Translate(Vector3.back * Time.deltaTime * cameraSpeed * 20f);
+        }
+
+
+        if (Input.GetKey (KeyCode.W)) {
+			transform.Translate (new Vector3 (0,1,1) * Time.deltaTime * cameraSpeed);
 		} else if (Input.GetKey (KeyCode.S)) {
-			transform.Translate (Vector3.back * Time.deltaTime * cameraSpeed);
+			transform.Translate (new Vector3(0,-1,-1) * Time.deltaTime * cameraSpeed);
 		} else if (Input.GetKey (KeyCode.A)) {
 			transform.Translate (Vector3.left * Time.deltaTime * cameraSpeed);
 		} else if (Input.GetKey (KeyCode.D)) {
