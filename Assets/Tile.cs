@@ -27,25 +27,35 @@ public class Tile : MonoBehaviour {
 	}
 
     private void OnMouseOver() {
-		if (this.GetComponent<Renderer> ().material.color == Constants.DARK_BLUE || this.GetComponent<Renderer> ().material.color == Constants.PINK) { // Move area highlighted
-			this.GetComponent<Renderer> ().material.color = Constants.PINK;
-		} else {
-			this.GetComponent<Renderer>().material.color = Constants.DARK_GREY;
-		}
+        if (this.GetComponent<Renderer>().material.color == Constants.DARK_BLUE || this.GetComponent<Renderer>().material.color == Constants.PINK) { // Move area highlighted
+            this.GetComponent<Renderer>().material.color = Constants.PINK;
+        } else if (this.GetComponent<Renderer>().material.color == Constants.HOLO_GREEN || this.GetComponent<Renderer>().material.color == Constants.RED) { //Interact tiles highlighted
+            this.GetComponent<Renderer>().material.color = Constants.RED;
+        } else {
+            this.GetComponent<Renderer>().material.color = Constants.DARK_GREY;
+        }
         
 		if (Input.GetMouseButtonDown(0) && this.GetComponent<Renderer> ().material.color == Constants.PINK) {
 			if (GameObject.Find ("Selected") != null) {
 				GameObject.Find ("Selected").transform.GetChild (0).GetComponent<PlayerShape> ().moveAnimation (transform.position);
 			}	
         }
+
+        if (Input.GetMouseButtonDown(0) && this.GetComponent<Renderer>().material.color == Constants.RED) {
+            if (GameObject.Find("Selected") != null) {
+                GameObject.Find("Selected").transform.GetChild(0).GetComponent<PlayerShape>().InteractAnimation(transform.position);
+            }
+        }
     }
 
     private void OnMouseExit() {
-		if (this.GetComponent<Renderer> ().material.color == Constants.PINK || this.GetComponent<Renderer> ().material.color == Constants.DARK_BLUE) {
-			this.GetComponent<Renderer>().material.color = Constants.DARK_BLUE;
-		} else {
-			this.GetComponent<Renderer> ().material.color = Color.white;
-		}
+        if (this.GetComponent<Renderer>().material.color == Constants.PINK || this.GetComponent<Renderer>().material.color == Constants.DARK_BLUE) {
+            this.GetComponent<Renderer>().material.color = Constants.DARK_BLUE;
+        } else if (this.GetComponent<Renderer>().material.color == Constants.HOLO_GREEN || this.GetComponent<Renderer>().material.color == Constants.RED) {
+            this.GetComponent<Renderer>().material.color = Constants.HOLO_GREEN;
+        } else {
+            this.GetComponent<Renderer>().material.color = Color.white;
+        }
     }
 
 }

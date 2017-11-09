@@ -154,4 +154,34 @@ public class Pathing{
 		return path;
 	}
 
-}
+
+    /**
+     *  Returns a list with vectors from the tiles that have a unit on top, that are besides centre
+     */ 
+    public static List<Vector3> NeighbouringUnits(Vector3 centre) {
+        List<Vector3> unit = new List<Vector3>();
+
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
+
+            if (g.transform.position == new Vector3(centre.x + Constants.TILE_GAP, centre.y, centre.z)) {
+                unit.Add(new Vector3(g.transform.position.x, g.transform.position.y - Constants.UNIT_TILE_DIFF, g.transform.position.z));
+            }
+
+            if (g.transform.position == new Vector3(centre.x - Constants.TILE_GAP, centre.y, centre.z)) {
+                unit.Add(new Vector3(g.transform.position.x, g.transform.position.y - Constants.UNIT_TILE_DIFF, g.transform.position.z));
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z + Constants.TILE_GAP)) {
+                unit.Add(new Vector3(g.transform.position.x, g.transform.position.y - Constants.UNIT_TILE_DIFF, g.transform.position.z));
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z - Constants.TILE_GAP)) {
+                unit.Add(new Vector3(g.transform.position.x, g.transform.position.y - Constants.UNIT_TILE_DIFF, g.transform.position.z));
+            }
+
+        }
+
+        return unit;
+    }
+        
+    }

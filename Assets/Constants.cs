@@ -13,5 +13,7 @@ public static class Constants{
 	public static Color32 DARK_BLUE = new Color32(0x00, 0x00, 0x80, 0xFF);
 	public static Color32 PINK = new Color32 (0xFF, 0x69, 0xB4, 0xFF);
 	public static Color32 DARK_GREY = new Color32(0xBB, 0xBB, 0xBB, 0xFF);
+    public static Color32 HOLO_GREEN = new Color32(0x66,0xE5,0x47,0xFF);
+    public static Color32 RED = new Color32(0xE5, 0x47, 0x66, 0xFF);
 
 }

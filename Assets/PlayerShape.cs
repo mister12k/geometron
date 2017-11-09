@@ -7,6 +7,8 @@ public class PlayerShape : MonoBehaviour {
     private Vector3 target;
 	private List<Vector3> targetPath;
 
+    private GameObject interactedShape;
+
 	private int movement;
 
     // Use this for initialization
@@ -116,8 +118,47 @@ public class PlayerShape : MonoBehaviour {
 		targetPath = Pathing.AStar (this.transform.parent.position, target);
     }
 
+    public void InteractAnimation(Vector3 targetTile) {
 
-	public int getMovement(){
+        Vector3 centre = new Vector3(targetTile.x, targetTile.y + Constants.UNIT_TILE_DIFF, targetTile.z);
+
+        if(centre.x - transform.parent.position.x > 0) {
+            GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactRight", true);
+        } else if(centre.x - transform.parent.position.x < 0) {
+            GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactLeft", true);
+        } else if (centre.z - transform.parent.position.z > 0) {
+            GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactForward", true);
+        } else if (centre.z - transform.parent.position.z < 0) {
+            GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactBackward", true);
+        }
+
+
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
+            if (g.transform.position == centre) {
+                interactedShape = g;
+            }
+        }
+     
+        GameObject.Find("Main Camera").GetComponent<ButtonManager>().restoreInteractButton();
+    }
+
+    public void TriggerInteractedAnimation() {
+        foreach (AnimatorControllerParameter parameter in this.GetComponent<Animator>().parameters) {
+            if (parameter.name.Equals("interactLeft") || parameter.name.Equals("interactRight") || parameter.name.Equals("interactBackward") || parameter.name.Equals("interactForward")) {
+                this.GetComponent<Animator>().SetBool(parameter.name, false);
+            }
+        }
+
+        switch (this.name) {
+            case "Sphere":
+                
+                break;
+        }
+
+        interactedShape = null;
+    }
+
+    public int getMovement(){
 		return movement;
 	}
 }

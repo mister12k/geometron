@@ -15,9 +15,10 @@ public class ButtonManager : MonoBehaviour {
     private Text interactText;
 
 	private List<Tile> moveArea;
+    private List<Tile> interactTiles;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		movePressed = false;
         interactPressed = false;
 		moveButton = GameObject.Find ("MoveButton").GetComponent<Button>();
@@ -29,13 +30,13 @@ public class ButtonManager : MonoBehaviour {
         interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
         interactButton.gameObject.SetActive(false);
 
-        interactText = GameObject.Find("InteractTip").GetComponent<Text>();
+        interactText = GameObject.Find("InteractTip").GetComponentInChildren<Text>();
         interactTip = GameObject.Find("InteractTip");
-        interactText.gameObject.SetActive(false);
         interactTip.SetActive(false);
 
         moveArea = new List<Tile>();
-	}
+        interactTiles = new List<Tile>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -107,9 +108,11 @@ public class ButtonManager : MonoBehaviour {
             if (interactPressed) {
                 interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
                 ShowInteractTip();
+                HighlightInteractable();
             } else {
                 interactButton.image.color = Color.white;
-                //unhighlightMoveArea();
+                HideTip();
+                UnhighlightInteractable();
             }
         }
     }
@@ -126,6 +129,9 @@ public class ButtonManager : MonoBehaviour {
 
     public void restoreInteractButton() {
         interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+        HideTip();
+        UnhighlightInteractable();
+        interactPressed = false;
     }
 
     /**
@@ -162,7 +168,7 @@ public class ButtonManager : MonoBehaviour {
 		foreach (var tile in lightedArea) {
 			foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
 				if (tile == current.transform.position) {
-					current.GetComponent<Renderer>().material.color = new Color32(0x00, 0x00, 0x80, 0xFF);
+					current.GetComponent<Renderer>().material.color = Constants.DARK_BLUE;
 					moveArea.Add (current.GetComponent<Tile>());
 				}
 			}
@@ -179,11 +185,14 @@ public class ButtonManager : MonoBehaviour {
 		moveArea.Clear ();
 	}
 
+    /**
+     *  Shows the interact tip for the currently selected shape 
+     */
     void ShowInteractTip() {
         string nameSelected = GameObject.Find("Selected").transform.GetChild(0).name;
-
-        interactText.gameObject.SetActive(true);
+        
         interactTip.SetActive(true);
+        interactTip.transform.GetChild(0).gameObject.SetActive(true);
 
         switch (nameSelected) {
             case "Sphere":
@@ -191,8 +200,46 @@ public class ButtonManager : MonoBehaviour {
                 break;
 
             case "Cube":
-                interactText.text = "";
+                interactText.text = "The cube will stomp a neighbouring figure, causing unexpected results depending on the stomped shape.";
                 break;
         }
+    }
+
+    /**
+     *  Hides the interact tip for the currently selected shape 
+     */
+    void HideTip() {
+        interactTip.SetActive(false);
+        interactTip.transform.GetChild(0).gameObject.SetActive(false);
+    }
+
+    /**
+    * 	Highlights the tiles which the shape currently selected can interact
+    */
+    void HighlightInteractable() {
+        List<Vector3> lightedArea = new List<Vector3>();
+
+        // First, get the neighbouring shapes of the shape's position
+        lightedArea = Pathing.NeighbouringUnits(GameObject.Find("Selected").transform.position);
+
+        // Highlight the identified tiles which can be interacted with
+        foreach (var tile in lightedArea) {
+            foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
+                if (tile == current.transform.position) {
+                    current.GetComponent<Renderer>().material.color = Constants.HOLO_GREEN;
+                    interactTiles.Add(current.GetComponent<Tile>());
+                }
+            }
+        }
+    }
+
+    /**
+    * 	Unhighlights the tiles which the shape currently selected can interact
+    */
+    public void UnhighlightInteractable() {
+        foreach (var tile in interactTiles) {
+            tile.GetComponent<Renderer>().material.color = Color.white;
+        }
+        interactTiles.Clear();
     }
 }
