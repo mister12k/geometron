@@ -184,11 +184,17 @@ public class PlayerShape : MonoBehaviour {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
                             if (tile.transform.position == new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y - Constants.UNIT_TILE_DIFF, interactedShape.transform.position.z)) {
                                 foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-                                    if (unit.transform.position == new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y, interactedShape.transform.position.z)) {
-                                        occupied = true;                                        
+                                    for (float moveAux = move; moveAux > 0f; moveAux -= 2.01f) {
+                                        if (unit.transform.position == new Vector3(interactedShape.transform.position.x + moveAux, interactedShape.transform.position.y, interactedShape.transform.position.z)) {
+                                            occupied = true;
+                                        }
                                     }
                                 }
-                                if (!occupied)  interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y , interactedShape.transform.position.z));
+                                if (!occupied) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y, interactedShape.transform.position.z));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
                                 occupied = false;
                             }
                         }
@@ -198,11 +204,17 @@ public class PlayerShape : MonoBehaviour {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
                             if (tile.transform.position == new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y - Constants.UNIT_TILE_DIFF, interactedShape.transform.position.z)) {
                                 foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-                                    if (unit.transform.position == new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y, interactedShape.transform.position.z)) {
-                                        occupied = true;                                        
+                                    for (float moveAux = move; moveAux >= 2.01f; moveAux -= 2.01f) {
+                                        if (unit.transform.position == new Vector3(interactedShape.transform.position.x - moveAux, interactedShape.transform.position.y, interactedShape.transform.position.z)) {
+                                            occupied = true;
+                                        }
                                     }
                                 }
-                                if (!occupied)  interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y , interactedShape.transform.position.z));
+                                if (!occupied) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y, interactedShape.transform.position.z));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
                                 occupied = false;
                             }
                         }
@@ -212,11 +224,17 @@ public class PlayerShape : MonoBehaviour {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
                             if (tile.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y - Constants.UNIT_TILE_DIFF, interactedShape.transform.position.z + move)) {
                                 foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-                                    if (unit.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z + move)) {
-                                        occupied = true;
+                                    for (float moveAux = move; moveAux > 0f; moveAux -= 2.01f) {
+                                        if (unit.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z + moveAux)) {
+                                            occupied = true;
+                                        }
                                     }
                                 }
-                                if(!occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z + move));
+                                if (!occupied) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z + move));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
                                 occupied = false;
                             }
                         }
@@ -226,11 +244,17 @@ public class PlayerShape : MonoBehaviour {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
                             if (tile.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y - Constants.UNIT_TILE_DIFF, interactedShape.transform.position.z - move)) {
                                 foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-                                    if (unit.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z - move)) {
-                                        occupied = true;
+                                    for (float moveAux = move; moveAux > 0f; moveAux -= 2.01f) {
+                                        if (unit.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z - moveAux)) {
+                                            occupied = true;
+                                        }
                                     }
                                 }
-                                if (!occupied)  interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z - move));
+                                if (!occupied) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z - move));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
                                 occupied = false;
                             }
                         }
@@ -239,8 +263,7 @@ public class PlayerShape : MonoBehaviour {
                 break;
         }
 
-        interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
-        interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+        
 
         interactedShape = null;
     }
