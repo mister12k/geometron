@@ -61,6 +61,7 @@ public class PlayerShape : MonoBehaviour {
 				} else {
 					if (transform.parent.position == target) {
 						this.GetComponent<Animator> ().SetBool ("moving", false);
+                        GameObject.Find("Main Camera").GetComponent<ButtonManager>().SetButtons();
                     }
 					targetPath.RemoveAt (0);
 				}
@@ -74,6 +75,15 @@ public class PlayerShape : MonoBehaviour {
                     if (transform.parent.position != this.interactTarget) {
                         transform.parent.position = Vector3.MoveTowards(transform.parent.position, interactTarget, 2f * Constants.TILE_GAP * Time.deltaTime);
                     } else {
+                        this.SetInteracted(false);
+                        this.SetInteracting(null);
+                    }
+                    break;
+                case "Pyramid":
+                    if (transform.parent.position != this.interactTarget) {
+                        transform.parent.position = Vector3.MoveTowards(transform.parent.position, interactTarget, 2f * Constants.TILE_GAP * Time.deltaTime);
+                    } else {
+                        this.GetComponent<Animator>().SetBool("landingReached", true);
                         this.SetInteracted(false);
                         this.SetInteracting(null);
                     }
@@ -143,10 +153,16 @@ public class PlayerShape : MonoBehaviour {
             GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactBackward", true);
         }
 
-
-        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
-            if (g.transform.position == centre) {
-                interactedShape = g;
+        // Special condition for pyramid shapes, as they have a mid-step on their animations and interact with
+        // themselves
+        if (this.name == "Pyramid") {
+            GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("landingReached", false);
+            interactedShape = this.gameObject;
+        } else {
+            foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
+                if (g.transform.position == centre) {
+                    interactedShape = g;
+                }
             }
         }
      
@@ -177,6 +193,9 @@ public class PlayerShape : MonoBehaviour {
             }
         }
 
+
+        // This big switch for the interactions needs a big optimization and cleaning as there is too
+        // much duplicate code that can be avoided
         switch (this.name) {
             case "Sphere":
                 if (right) {
@@ -261,6 +280,83 @@ public class PlayerShape : MonoBehaviour {
                     }
                 }
                 break;
+
+            case "Pyramid":
+                this.transform.parent.position = new Vector3(, this.transform.parent.position.y + , this.transform.parent.position.z);
+                if (right) {
+                    for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
+                        foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
+                            foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+                                if (unit.transform.position == new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y, interactedShape.transform.position.z)) {
+                                    occupied = true;
+                                }
+                            }
+                            if (!occupied) {
+                                if (!interactedShape.GetComponentInChildren<PlayerShape>().GetInteracted()) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y, interactedShape.transform.position.z));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
+                            }
+                            occupied = false;
+                        }
+                    }
+                } else if (left) {
+                    for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
+                        foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
+                            foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+                                if (unit.transform.position == new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y, interactedShape.transform.position.z)) {
+                                    occupied = true;
+                                }
+                            }
+                            if (!occupied) {
+                                if (!interactedShape.GetComponentInChildren<PlayerShape>().GetInteracted()) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y, interactedShape.transform.position.z));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
+                            }
+                            occupied = false;
+                        }
+                    }
+                } else if (forward) {
+                    for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
+                        foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
+                            foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+                                if (unit.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z + move)) {
+                                    occupied = true;
+                                }
+                            }
+                            if (!occupied) {
+                                if (!interactedShape.GetComponentInChildren<PlayerShape>().GetInteracted()) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z + move));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
+                            }
+                            occupied = false;
+                        }
+                    }
+                } else if (backward) {
+                    for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
+                        foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
+                            foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+                                if (unit.transform.position == new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z - move)) {
+                                    occupied = true;
+                                }
+                            }
+                            if (!occupied) {
+                                if (!interactedShape.GetComponentInChildren<PlayerShape>().GetInteracted()) {
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(interactedShape.transform.position.x, interactedShape.transform.position.y, interactedShape.transform.position.z - move));
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
+                                }
+                            }
+                            occupied = false;
+                        }
+                    }
+                }
+                break;
         }
 
         
@@ -282,6 +378,10 @@ public class PlayerShape : MonoBehaviour {
     public void SetInteracting(GameObject interactingObject) {
         this.interactingShape = interactingObject;
 
+    }
+
+    public bool GetInteracted() {
+        return interacted;
     }
 
     public int getMovement(){

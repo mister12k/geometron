@@ -202,6 +202,10 @@ public class ButtonManager : MonoBehaviour {
             case "Cube":
                 interactText.text = "The cube will stomp a neighbouring figure, causing unexpected results depending on the stomped shape.";
                 break;
+
+            case "Pyramid":
+                interactText.text = "The pyramid will fly over the neighbouring figure, and those neighbouring it in a straight line, landing at the nearest space.";
+                break;
         }
     }
 
