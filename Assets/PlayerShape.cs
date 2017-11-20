@@ -16,8 +16,13 @@ public class PlayerShape : MonoBehaviour {
 
 	private int movement;
 
+    private bool hasMoved;
+    private bool hasInteracted;
+
     // Use this for initialization
     void Start() {
+        hasMoved = false;
+        hasInteracted = false;
 		targetPath = new List<Vector3> ();
 		if (this.name.Equals ("Cube")) {
 			movement = 2;
@@ -62,7 +67,7 @@ public class PlayerShape : MonoBehaviour {
 				} else {
 					if (transform.parent.position == target) {
 						this.GetComponent<Animator> ().SetBool ("moving", false);
-                        GameObject.Find("Main Camera").GetComponent<ButtonManager>().SetButtons();
+                        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
                     }
 					targetPath.RemoveAt (0);
 				}
@@ -91,7 +96,9 @@ public class PlayerShape : MonoBehaviour {
                         transform.parent.position = Vector3.MoveTowards(transform.parent.position, interactTarget, 2f * Constants.TILE_GAP * Time.deltaTime);
                         if (transform.parent.position == this.interactTarget) {
                             this.GetComponent<Animator>().SetBool("landingReached", true);
-                            interactTarget = new Vector3(interactTarget.x, interactTarget.y - 2f, interactTarget.z);
+                            if (interactTarget != originalPosition) {
+                                interactTarget = new Vector3(interactTarget.x, interactTarget.y - 2f, interactTarget.z);
+                            }
                         }
                     } else if (this.GetComponent<Animator>().GetBool("landingReached") && transform.parent.position != this.interactTarget) {
                         transform.parent.position = Vector3.MoveTowards(transform.parent.position, interactTarget, 2f * Constants.TILE_GAP * Time.deltaTime);
@@ -109,7 +116,7 @@ public class PlayerShape : MonoBehaviour {
 	 */ 
     public void OnMouseOver() {
 		if (!this.transform.parent.name.Equals ("Selected")) {
-			this.GetComponent<Renderer> ().material.color = Constants.HOLO_BLUE;
+			this.GetComponent<Renderer> ().material.color = Constants.COLOR_SHAPE_OVER;
 		}
     }
 
@@ -127,7 +134,7 @@ public class PlayerShape : MonoBehaviour {
 	 */ 
 	public void OnMouseDown() {
 		if (GameObject.Find ("Selected") != null) {
-            if (GameObject.Find("Selected").GetComponentInChildren<Animator>().GetBool("moving")) {
+            if (!GameObject.Find("Selected").GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle")) {
                 return;
             }
 			GameObject.Find ("Selected").transform.GetChild (0).gameObject.GetComponent<Renderer> ().material.color = Color.white;
@@ -135,8 +142,8 @@ public class PlayerShape : MonoBehaviour {
 		}
 
         this.transform.parent.name = "Selected";
-        GameObject.Find("Main Camera").GetComponent<ButtonManager>().SetButtons();
-        this.GetComponent<Renderer> ().material.color = Constants.PURPLE;
+        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
+        this.GetComponent<Renderer> ().material.color = Constants.COLOR_SHAPE_SELECTED;
 	}
   
 	/**
@@ -145,13 +152,16 @@ public class PlayerShape : MonoBehaviour {
 	 */
     public void moveAnimation(Vector3 targetTile) {
         this.GetComponent<Animator>().SetBool("moving", true);
-		GameObject.Find ("Main Camera").GetComponent<ButtonManager>().restoreMoveButton();
+        hasMoved = true;
+        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
 
-		target = new Vector3(targetTile.x,targetTile.y + Constants.UNIT_TILE_DIFF,targetTile.z);
+        target = new Vector3(targetTile.x,targetTile.y + Constants.UNIT_TILE_DIFF,targetTile.z);
 		targetPath = Pathing.AStar (this.transform.parent.position, target);
     }
 
     public void InteractAnimation(Vector3 targetTile) {
+
+        hasInteracted = true;
 
         Vector3 centre = new Vector3(targetTile.x, targetTile.y + Constants.UNIT_TILE_DIFF, targetTile.z);
 
@@ -181,8 +191,8 @@ public class PlayerShape : MonoBehaviour {
                 }
             }
         }
-     
-        GameObject.Find("Main Camera").GetComponent<ButtonManager>().restoreInteractButton();
+
+        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
     }
 
     public void TriggerInteractedAnimation() {
@@ -297,6 +307,7 @@ public class PlayerShape : MonoBehaviour {
                 break;
 
             case "Pyramid":
+                occupied = true;
                 if (right) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -314,6 +325,7 @@ public class PlayerShape : MonoBehaviour {
                         }
                         if (!occupied) break;
                     }
+                    if(occupied)    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 } else if (left) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -332,6 +344,7 @@ public class PlayerShape : MonoBehaviour {
                         }
                         if (!occupied) break;
                     }
+                    if (occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 } else if (forward) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -349,6 +362,7 @@ public class PlayerShape : MonoBehaviour {
                         }
                         if (!occupied) break;
                     }
+                    if (occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 } else if (backward) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -366,7 +380,11 @@ public class PlayerShape : MonoBehaviour {
                         }
                         if (!occupied) break;
                     }
+                    if (occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 }
+                break;
+
+            case "Cube":
                 break;
         }
 

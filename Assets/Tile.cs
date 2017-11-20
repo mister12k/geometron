@@ -19,6 +19,7 @@ public class Tile : MonoBehaviour {
         underPlane.transform.position = new Vector3(this.transform.position.x, this.transform.position.y - 0.01f, this.transform.position.z);
         underPlane.transform.localScale = new Vector3(Constants.TILE_WIDTH + 0.005f, 1 , Constants.TILE_WIDTH + 0.005f);
         underPlane.GetComponent<Renderer>().material = Resources.Load("Materials/Black", typeof(Material)) as Material;
+        underPlane.hideFlags = HideFlags.HideInHierarchy;
     }
 	
 	// Update is called once per frame
@@ -27,21 +28,21 @@ public class Tile : MonoBehaviour {
 	}
 
     private void OnMouseOver() {
-        if (this.GetComponent<Renderer>().material.color == Constants.DARK_BLUE || this.GetComponent<Renderer>().material.color == Constants.PINK) { // Move area highlighted
-            this.GetComponent<Renderer>().material.color = Constants.PINK;
-        } else if (this.GetComponent<Renderer>().material.color == Constants.HOLO_GREEN || this.GetComponent<Renderer>().material.color == Constants.RED) { //Interact tiles highlighted
-            this.GetComponent<Renderer>().material.color = Constants.RED;
+        if (this.GetComponent<Renderer>().material.color == Constants.COLOR_MOVE_AREA || this.GetComponent<Renderer>().material.color == Constants.COLOR_MOVE_OVER) { // Move area highlighted
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_MOVE_OVER;
+        } else if (this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_AREA || this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_OVER) { //Interact tiles highlighted
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_OVER;
         } else {
-            this.GetComponent<Renderer>().material.color = Constants.DARK_GREY;
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_OVER;
         }
         
-		if (Input.GetMouseButtonDown(0) && this.GetComponent<Renderer> ().material.color == Constants.PINK) {
+		if (Input.GetMouseButtonDown(0) && this.GetComponent<Renderer> ().material.color == Constants.COLOR_MOVE_OVER) {
 			if (GameObject.Find ("Selected") != null) {
 				GameObject.Find ("Selected").transform.GetChild (0).GetComponent<PlayerShape> ().moveAnimation (transform.position);
 			}	
         }
 
-        if (Input.GetMouseButtonDown(0) && this.GetComponent<Renderer>().material.color == Constants.RED) {
+        if (Input.GetMouseButtonDown(0) && this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_OVER) {
             if (GameObject.Find("Selected") != null) {
                 GameObject.Find("Selected").transform.GetChild(0).GetComponent<PlayerShape>().InteractAnimation(transform.position);
             }
@@ -49,10 +50,10 @@ public class Tile : MonoBehaviour {
     }
 
     private void OnMouseExit() {
-        if (this.GetComponent<Renderer>().material.color == Constants.PINK || this.GetComponent<Renderer>().material.color == Constants.DARK_BLUE) {
-            this.GetComponent<Renderer>().material.color = Constants.DARK_BLUE;
-        } else if (this.GetComponent<Renderer>().material.color == Constants.HOLO_GREEN || this.GetComponent<Renderer>().material.color == Constants.RED) {
-            this.GetComponent<Renderer>().material.color = Constants.HOLO_GREEN;
+        if (this.GetComponent<Renderer>().material.color == Constants.COLOR_MOVE_OVER || this.GetComponent<Renderer>().material.color == Constants.COLOR_MOVE_AREA) {
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_MOVE_AREA;
+        } else if (this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_AREA || this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_OVER) {
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
         } else {
             this.GetComponent<Renderer>().material.color = Color.white;
         }
