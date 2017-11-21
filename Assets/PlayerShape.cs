@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerShape : MonoBehaviour {
 
     private Vector3 target;
-	private List<Vector3> targetPath;
+    private List<Vector3> targetPath;
 
     private bool interacted;
 
@@ -14,7 +14,7 @@ public class PlayerShape : MonoBehaviour {
     private GameObject interactingShape;
     private GameObject interactedShape;
 
-	private int movement;
+    private int movement;
 
     private bool hasMoved;
     private bool hasInteracted;
@@ -23,12 +23,12 @@ public class PlayerShape : MonoBehaviour {
     void Start() {
         hasMoved = false;
         hasInteracted = false;
-		targetPath = new List<Vector3> ();
-		if (this.name.Equals ("Cube")) {
-			movement = 2;
-		} else {
-			movement = 3;
-		}
+        targetPath = new List<Vector3>();
+        if (this.name.Equals("Cube") || this.name.Equals("Plank")) {
+            movement = 2;
+        } else {
+            movement = 3;
+        }
     }
 
     /**
@@ -36,44 +36,44 @@ public class PlayerShape : MonoBehaviour {
      * 	temporal direction
      */
     void Update() {
-		Vector3 tempTarget = new Vector3 ();
-		if (this.transform.parent.name.Equals("Selected")) {
-			
+        Vector3 tempTarget = new Vector3();
+        if (this.transform.parent.name.Equals("Selected")) {
+
             // Movement of a shape
-			if (targetPath.Count > 0) {
-				tempTarget = targetPath [0];
+            if (targetPath.Count > 0) {
+                tempTarget = targetPath[0];
 
-				if (this.GetComponent<Animator> ().GetBool ("moving") && Vector3.Distance (transform.parent.position, tempTarget) > 0f) {
-					foreach (AnimatorControllerParameter parameter in this.GetComponent<Animator>().parameters) {
-						if (!parameter.name.Equals ("moving")) {
-							this.GetComponent<Animator> ().SetBool (parameter.name, false);
-						}
-					}
+                if (this.GetComponent<Animator>().GetBool("moving") && Vector3.Distance(transform.parent.position, tempTarget) > 0f) {
+                    foreach (AnimatorControllerParameter parameter in this.GetComponent<Animator>().parameters) {
+                        if (!parameter.name.Equals("moving")) {
+                            this.GetComponent<Animator>().SetBool(parameter.name, false);
+                        }
+                    }
 
-					if (tempTarget.x > transform.parent.position.x && tempTarget.x - transform.parent.position.x > 0f) {
-						this.GetComponent<Animator> ().SetBool ("movingRight", true);                
-						transform.parent.position = Vector3.MoveTowards (transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
-					} else if (tempTarget.x < transform.parent.position.x && transform.parent.position.x - tempTarget.x > 0f) {
-						this.GetComponent<Animator> ().SetBool ("movingLeft", true);
-						transform.parent.position = Vector3.MoveTowards (transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
-					} else if (tempTarget.z > transform.parent.position.z && tempTarget.z - transform.parent.position.z > 0f) {
-						this.GetComponent<Animator> ().SetBool ("movingForward", true);
-						transform.parent.position = Vector3.MoveTowards (transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
-					} else if (tempTarget.z < transform.parent.position.z && transform.parent.position.z - tempTarget.z > 0f) {
-						this.GetComponent<Animator> ().SetBool ("movingBackward", true);
-						transform.parent.position = Vector3.MoveTowards (transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
-					}
+                    if (tempTarget.x > transform.parent.position.x && tempTarget.x - transform.parent.position.x > 0f) {
+                        this.GetComponent<Animator>().SetBool("movingRight", true);
+                        transform.parent.position = Vector3.MoveTowards(transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
+                    } else if (tempTarget.x < transform.parent.position.x && transform.parent.position.x - tempTarget.x > 0f) {
+                        this.GetComponent<Animator>().SetBool("movingLeft", true);
+                        transform.parent.position = Vector3.MoveTowards(transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
+                    } else if (tempTarget.z > transform.parent.position.z && tempTarget.z - transform.parent.position.z > 0f) {
+                        this.GetComponent<Animator>().SetBool("movingForward", true);
+                        transform.parent.position = Vector3.MoveTowards(transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
+                    } else if (tempTarget.z < transform.parent.position.z && transform.parent.position.z - tempTarget.z > 0f) {
+                        this.GetComponent<Animator>().SetBool("movingBackward", true);
+                        transform.parent.position = Vector3.MoveTowards(transform.parent.position, tempTarget, Constants.TILE_GAP * Time.deltaTime);
+                    }
 
-				} else {
-					if (transform.parent.position == target) {
-						this.GetComponent<Animator> ().SetBool ("moving", false);
+                } else {
+                    if (transform.parent.position == target) {
+                        this.GetComponent<Animator>().SetBool("moving", false);
                         GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
                     }
-					targetPath.RemoveAt (0);
-				}
-			}
+                    targetPath.RemoveAt(0);
+                }
+            }
 
-		}
+        }
 
         if (this.interacted) {
             switch (interactingShape.name) {
@@ -111,42 +111,42 @@ public class PlayerShape : MonoBehaviour {
         }
     }
 
-	/**
+    /**
 	 * 	Changes the colour of the shape when moving the mouse into it if not selected previously
-	 */ 
+	 */
     public void OnMouseOver() {
-		if (!this.transform.parent.name.Equals ("Selected")) {
-			this.GetComponent<Renderer> ().material.color = Constants.COLOR_SHAPE_OVER;
-		}
+        if (!this.transform.parent.name.Equals("Selected")) {
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_SHAPE_OVER;
+        }
     }
 
-	/** 
+    /** 
 	 * 	Changes the colour of the shape when moving the mouse away of it if not selected
-	 */ 
+	 */
     public void OnMouseExit() {
-		if (!this.transform.parent.name.Equals ("Selected")) {
-			this.GetComponent<Renderer> ().material.color = Color.white;
-		}
+        if (!this.transform.parent.name.Equals("Selected")) {
+            this.GetComponent<Renderer>().material.color = Color.white;
+        }
     }
 
-	/**
+    /**
 	 * 	Changes the colour of the shape after selecting it, sets this as the selected shape and calls for the UI elements to be set accordingly
-	 */ 
-	public void OnMouseDown() {
-		if (GameObject.Find ("Selected") != null) {
+	 */
+    public void OnMouseDown() {
+        if (GameObject.Find("Selected") != null) {
             if (!GameObject.Find("Selected").GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle")) {
                 return;
             }
-			GameObject.Find ("Selected").transform.GetChild (0).gameObject.GetComponent<Renderer> ().material.color = Color.white;
-			GameObject.Find ("Selected").name = "Player";
-		}
+            GameObject.Find("Selected").transform.GetChild(0).gameObject.GetComponent<Renderer>().material.color = Color.white;
+            GameObject.Find("Selected").name = "Player";
+        }
 
         this.transform.parent.name = "Selected";
         GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
-        this.GetComponent<Renderer> ().material.color = Constants.COLOR_SHAPE_SELECTED;
-	}
-  
-	/**
+        this.GetComponent<Renderer>().material.color = Constants.COLOR_SHAPE_SELECTED;
+    }
+
+    /**
 	 * 	Sets the necessary parameters to start the movement of the shape, along with its animation
 	 * 	and pathfinding.
 	 */
@@ -155,8 +155,8 @@ public class PlayerShape : MonoBehaviour {
         hasMoved = true;
         GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
 
-        target = new Vector3(targetTile.x,targetTile.y + Constants.UNIT_TILE_DIFF,targetTile.z);
-		targetPath = Pathing.AStar (this.transform.parent.position, target);
+        target = new Vector3(targetTile.x, targetTile.y + Constants.UNIT_TILE_DIFF, targetTile.z);
+        targetPath = Pathing.AStar(this.transform.parent.position, target);
     }
 
     public void InteractAnimation(Vector3 targetTile) {
@@ -165,9 +165,9 @@ public class PlayerShape : MonoBehaviour {
 
         Vector3 centre = new Vector3(targetTile.x, targetTile.y + Constants.UNIT_TILE_DIFF, targetTile.z);
 
-        if(centre.x - transform.parent.position.x > 0) {
+        if (centre.x - transform.parent.position.x > 0) {
             GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactRight", true);
-        } else if(centre.x - transform.parent.position.x < 0) {
+        } else if (centre.x - transform.parent.position.x < 0) {
             GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactLeft", true);
         } else if (centre.z - transform.parent.position.z > 0) {
             GameObject.Find("Selected").GetComponentInChildren<Animator>().SetBool("interactForward", true);
@@ -201,19 +201,19 @@ public class PlayerShape : MonoBehaviour {
         foreach (AnimatorControllerParameter parameter in this.GetComponent<Animator>().parameters) {
             switch (parameter.name) {
                 case "interactLeft":
-                    if(this.GetComponent<Animator>().GetBool(parameter.name))   left = true;
+                    if (this.GetComponent<Animator>().GetBool(parameter.name)) left = true;
                     this.GetComponent<Animator>().SetBool(parameter.name, false);
                     break;
                 case "interactRight":
-                    if (this.GetComponent<Animator>().GetBool(parameter.name))  right = true;
+                    if (this.GetComponent<Animator>().GetBool(parameter.name)) right = true;
                     this.GetComponent<Animator>().SetBool(parameter.name, false);
                     break;
                 case "interactForward":
-                    if (this.GetComponent<Animator>().GetBool(parameter.name))  forward = true;
+                    if (this.GetComponent<Animator>().GetBool(parameter.name)) forward = true;
                     this.GetComponent<Animator>().SetBool(parameter.name, false);
                     break;
                 case "interactBackward":
-                    if (this.GetComponent<Animator>().GetBool(parameter.name))  backward = true;
+                    if (this.GetComponent<Animator>().GetBool(parameter.name)) backward = true;
                     this.GetComponent<Animator>().SetBool(parameter.name, false);
                     break;
             }
@@ -224,7 +224,7 @@ public class PlayerShape : MonoBehaviour {
         switch (this.name) {
             case "Sphere":
                 if (right) {
-                    for (float move = 2.01f; move <= 6.01f; move += 2.01f) { 
+                    for (float move = 2.01f; move <= 6.01f; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
                             if (tile.transform.position == new Vector3(interactedShape.transform.position.x + move, interactedShape.transform.position.y - Constants.UNIT_TILE_DIFF, interactedShape.transform.position.z)) {
                                 foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
@@ -243,7 +243,7 @@ public class PlayerShape : MonoBehaviour {
                             }
                         }
                     }
-                }else if (left) {
+                } else if (left) {
                     for (float move = 2.01f; move <= 6.01f; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
                             if (tile.transform.position == new Vector3(interactedShape.transform.position.x - move, interactedShape.transform.position.y - Constants.UNIT_TILE_DIFF, interactedShape.transform.position.z)) {
@@ -325,7 +325,7 @@ public class PlayerShape : MonoBehaviour {
                         }
                         if (!occupied) break;
                     }
-                    if(occupied)    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
+                    if (occupied) interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 } else if (left) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -338,13 +338,13 @@ public class PlayerShape : MonoBehaviour {
                                 }
                                 if (!occupied) {
                                     interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(originalPosition.x - move, originalPosition.y + 2f, originalPosition.z));
-                                    
+
                                 }
                             }
                         }
                         if (!occupied) break;
                     }
-                    if (occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
+                    if (occupied) interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 } else if (forward) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -356,13 +356,13 @@ public class PlayerShape : MonoBehaviour {
                                     }
                                 }
                                 if (!occupied) {
-                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(originalPosition.x, originalPosition.y + 2f, originalPosition.z + move));                             
+                                    interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(new Vector3(originalPosition.x, originalPosition.y + 2f, originalPosition.z + move));
                                 }
                             }
                         }
                         if (!occupied) break;
                     }
-                    if (occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
+                    if (occupied) interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 } else if (backward) {
                     for (float move = 2.01f; move <= 2.01 * GameObject.FindGameObjectsWithTag("Unit").Length; move += 2.01f) {
                         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile")) {
@@ -380,7 +380,7 @@ public class PlayerShape : MonoBehaviour {
                         }
                         if (!occupied) break;
                     }
-                    if (occupied)   interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
+                    if (occupied) interactedShape.GetComponentInChildren<PlayerShape>().SetInteractTarget(originalPosition);
                 }
                 break;
 
@@ -388,9 +388,48 @@ public class PlayerShape : MonoBehaviour {
                 break;
         }
 
-        
+
 
         interactedShape = null;
+    }
+
+    /**
+     *  Special trigger for the cube's stomp, which needs to handle the stomped shapes reaction (animation, creation of shapes,
+     *  destruction of other shapes, etc...)
+     */
+    public void TriggerStomp() {
+        GameObject interacted = interactedShape.transform.GetChild(0).gameObject;
+
+        switch (interacted.name) {
+            case "Sphere":
+                interacted.GetComponent<Animator>().SetBool("stomped", true);
+                break;
+            case "Cube":
+                interacted.GetComponent<Animator>().SetBool("stomped", true);
+                break;
+        }
+    }
+
+    public void TriggerAfterStomp(){
+        GameObject interacted = interactedShape.transform.GetChild(0).gameObject;
+        GameObject newObject;
+
+        switch (interacted.name) {
+            case "Sphere":
+                interacted.GetComponent<Animator>().SetBool("stomped", false);
+                break;
+            case "Cube":
+                interacted.GetComponent<Animator>().SetBool("stomped", false);
+                newObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                newObject.name = "Plank";
+                newObject.transform.parent = this.transform.parent;
+                newObject.transform.localPosition = Vector3.zero;
+                newObject.transform.localScale = new Vector3(0.1f, 1f, 0.1f);
+                newObject.transform.eulerAngles = new Vector3(0f,0f,-90f);
+                newObject.GetComponent<Renderer>().material = Resources.Load("Materials/Material_002", typeof(Material)) as Material;
+                newObject.AddComponent<PlayerShape>();
+                break;
+        }
     }
 
     public void SetInteracted(bool state)
