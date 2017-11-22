@@ -156,7 +156,7 @@ public class Pathing{
 
 
     /**
-     *  Returns a list with vectors from the tiles that have a unit on top, that are besides centre
+     *  Returns a list with vectors from the tiles that have a unit on top, that are neighbouring centre
      */ 
     public static List<Vector3> NeighbouringUnits(Vector3 centre) {
         List<Vector3> unit = new List<Vector3>();
@@ -183,5 +183,50 @@ public class Pathing{
 
         return unit;
     }
-        
+
+    /**
+     *  Returns a list with vectors from the empty spaces (no tiles) that are neighbouring centre
+     */
+    public static List<Vector3> NeighbouringSpaces(Vector3 centre)
+    {
+        List<Vector3> spaces = new List<Vector3>();
+        bool emptyRight = true, emptyLeft = true, emptyForward = true, emptyBackward = true;
+
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Tile")) {
+            if (g.transform.position == new Vector3(centre.x + Constants.TILE_GAP, centre.y, centre.z)) {
+                emptyRight = false;
+            }
+
+            if (g.transform.position == new Vector3(centre.x - Constants.TILE_GAP, centre.y, centre.z)) {
+                emptyLeft = false;
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z + Constants.TILE_GAP)) {
+                emptyForward = false;
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z - Constants.TILE_GAP)) {
+                emptyBackward = false;
+            }
+        }
+
+        if (emptyRight) {
+            spaces.Add(new Vector3(centre.x + Constants.TILE_GAP, centre.y, centre.z));
+        }
+
+        if (emptyLeft) {
+            spaces.Add(new Vector3(centre.x - Constants.TILE_GAP, centre.y, centre.z));
+        }
+
+        if (emptyForward) {
+            spaces.Add(new Vector3(centre.x, centre.y, centre.z + Constants.TILE_GAP));
+        }
+
+        if (emptyBackward) {
+            spaces.Add(new Vector3(centre.x, centre.y, centre.z - Constants.TILE_GAP));
+        }
+
+        return spaces;
     }
+
+}

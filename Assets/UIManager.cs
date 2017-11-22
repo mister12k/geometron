@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
 
+    private string shapeSelected;
+
 	private Button moveButton;
     private Button interactButton;
 
@@ -27,7 +29,7 @@ public class UIManager : MonoBehaviour {
 
         interactButton = GameObject.Find("InteractButton").GetComponent<Button>();
         interactButton.GetComponent<Button>().onClick.AddListener(OnInteractClick);
-        interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+        interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
         interactButton.gameObject.SetActive(false);
 
         interactText = GameObject.Find("InteractTip").GetComponentInChildren<Text>();
@@ -43,7 +45,8 @@ public class UIManager : MonoBehaviour {
      *  booleans given through arguments. It will click or unclick buttons as needed
      *  depending on the current state of the game.
      */
-    public void SetButtons(bool hasMoved, bool hasInteracted) {
+    public void SetButtons(bool hasMoved, bool hasInteracted, string name) {
+        shapeSelected = name;
 
         Vector3 selectedPosition = new Vector3();
         bool interactableObjects = false;
@@ -59,7 +62,7 @@ public class UIManager : MonoBehaviour {
 
         if (!hasInteracted) {
 
-            interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+            interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
 
             selectedPosition = GameObject.Find("Selected").transform.position;
 
@@ -94,13 +97,13 @@ public class UIManager : MonoBehaviour {
     }
 
     public void SetButtonMoveClicked() {
-        moveButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+        moveButton.image.color = Constants.COLOR_BUTTON_CLICKED;
         movePressed = true;
         unhighlightMoveArea();
     }
 
     public void SetButtonInteractClicked() {
-        interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+        interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
         interactPressed = true;
         HideTip();
         UnhighlightInteractable();
@@ -111,14 +114,14 @@ public class UIManager : MonoBehaviour {
 	 * 	and if it highlights or not the available move area for the currently selected shape
 	 */
     void OnMoveClick(){
-        if (!(moveButton.image.color == new Color32(0xC8, 0xC8, 0xC8, 0xFF) && movePressed)) {
+        if (!(moveButton.image.color == Constants.COLOR_BUTTON_CLICKED && movePressed)) {
             restoreInteractButton();
             movePressed = !movePressed;
             if (movePressed) {
-                moveButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+                moveButton.image.color = Constants.COLOR_BUTTON_CLICKED;
                 highlightMoveArea();
             } else {
-                moveButton.image.color = Color.white;
+                moveButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
                 unhighlightMoveArea();
             }
         }
@@ -129,15 +132,15 @@ public class UIManager : MonoBehaviour {
      * 	and if it highlights or not the interactable shapes and hides/shows the interaction tip.
 	 */
     void OnInteractClick() {
-        if (!(interactButton.image.color == new Color32(0xC8, 0xC8, 0xC8, 0xFF) && interactPressed)) {
+        if (!(interactButton.image.color == Constants.COLOR_BUTTON_CLICKED && interactPressed)) {
             restoreMoveButton();
             interactPressed = !interactPressed;
             if (interactPressed) {
-                interactButton.image.color = new Color32(0xC8, 0xC8, 0xC8, 0xFF);
+                interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
                 ShowInteractTip();
                 HighlightInteractable();
             } else {
-                interactButton.image.color = Color.white;
+                interactButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
                 HideTip();
                 UnhighlightInteractable();
             }
@@ -149,7 +152,7 @@ public class UIManager : MonoBehaviour {
 	 * 	unhighlights the move area
 	 */ 
 	public void restoreMoveButton() {
-		moveButton.image.color = Color.white;
+		moveButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
 		unhighlightMoveArea ();
 		movePressed = false;
 	}
@@ -159,7 +162,7 @@ public class UIManager : MonoBehaviour {
 	 * 	unhighlights the interacting shapes and hides the interaction tip.
 	 */
     public void restoreInteractButton() {
-        interactButton.image.color = Color.white;
+        interactButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
         HideTip();
         UnhighlightInteractable();
         interactPressed = false;
@@ -211,7 +214,7 @@ public class UIManager : MonoBehaviour {
 	 */
 	public void unhighlightMoveArea(){
 		foreach (var tile in moveArea) {
-			tile.GetComponent<Renderer> ().material.color = Color.white;
+			tile.GetComponent<Renderer> ().material.color = Constants.COLOR_BUTTON_UNCLICKED;
 		}
 		moveArea.Clear ();
 	}
@@ -249,20 +252,36 @@ public class UIManager : MonoBehaviour {
     }
 
     /**
-    * 	Highlights the tiles which the shape currently selected can interact
+    * 	Highlights the tiles or spaces which the shape currently selected can interact
     */
     void HighlightInteractable() {
         List<Vector3> lightedArea = new List<Vector3>();
 
-        // First, get the neighbouring shapes of the shape's position
-        lightedArea = Pathing.NeighbouringUnits(GameObject.Find("Selected").transform.position);
+        if (shapeSelected != "Plank") {
 
-        // Highlight the identified tiles which can be interacted with
-        foreach (var tile in lightedArea) {
-            foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
-                if (tile == current.transform.position) {
-                    current.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
-                    interactTiles.Add(current.GetComponent<Tile>());
+            // First, get the neighbouring shapes of the shape's position
+            lightedArea = Pathing.NeighbouringUnits(GameObject.Find("Selected").transform.position);
+
+            // Highlight the identified tiles which can be interacted with
+            foreach (var tile in lightedArea) {
+                foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
+                    if (tile == current.transform.position) {
+                        current.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
+                        interactTiles.Add(current.GetComponent<Tile>());
+                    }
+                }
+            }
+        } else {
+            // First, get the neighbouring spaces of the plank's position
+            lightedArea = Pathing.NeighbouringSpaces(GameObject.Find("Selected").transform.position);
+
+            // Highlight the identified spaces which can be interacted with
+            foreach (var tile in lightedArea) {
+                foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
+                    if (tile == current.transform.position) {
+                        current.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
+                        interactTiles.Add(current.GetComponent<Tile>());
+                    }
                 }
             }
         }
@@ -273,7 +292,7 @@ public class UIManager : MonoBehaviour {
     */
     public void UnhighlightInteractable() {
         foreach (var tile in interactTiles) {
-            tile.GetComponent<Renderer>().material.color = Color.white;
+            tile.GetComponent<Renderer>().material.color = Constants.COLOR_BUTTON_UNCLICKED;
         }
         interactTiles.Clear();
     }

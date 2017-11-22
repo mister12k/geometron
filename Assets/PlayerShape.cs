@@ -29,6 +29,9 @@ public class PlayerShape : MonoBehaviour {
         } else {
             movement = 3;
         }
+        if (this.name.Equals("Plank")) {
+            hasInteracted = true;
+        }
     }
 
     /**
@@ -67,7 +70,7 @@ public class PlayerShape : MonoBehaviour {
                 } else {
                     if (transform.parent.position == target) {
                         this.GetComponent<Animator>().SetBool("moving", false);
-                        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
+                        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted,name);
                     }
                     targetPath.RemoveAt(0);
                 }
@@ -142,7 +145,7 @@ public class PlayerShape : MonoBehaviour {
         }
 
         this.transform.parent.name = "Selected";
-        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
+        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted, name);
         this.GetComponent<Renderer>().material.color = Constants.COLOR_SHAPE_SELECTED;
     }
 
@@ -153,7 +156,7 @@ public class PlayerShape : MonoBehaviour {
     public void moveAnimation(Vector3 targetTile) {
         this.GetComponent<Animator>().SetBool("moving", true);
         hasMoved = true;
-        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
+        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted,name);
 
         target = new Vector3(targetTile.x, targetTile.y + Constants.UNIT_TILE_DIFF, targetTile.z);
         targetPath = Pathing.AStar(this.transform.parent.position, target);
@@ -192,7 +195,7 @@ public class PlayerShape : MonoBehaviour {
             }
         }
 
-        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted);
+        GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted,name);
     }
 
     public void TriggerInteractedAnimation() {
@@ -420,14 +423,17 @@ public class PlayerShape : MonoBehaviour {
                 break;
             case "Cube":
                 interacted.GetComponent<Animator>().SetBool("stomped", false);
-                newObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                newObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 newObject.name = "Plank";
-                newObject.transform.parent = this.transform.parent;
+                newObject.transform.parent = interacted.transform.parent;
                 newObject.transform.localPosition = Vector3.zero;
-                newObject.transform.localScale = new Vector3(0.1f, 1f, 0.1f);
+                newObject.transform.localScale = new Vector3(1f, 0.01f, 1f);
                 newObject.transform.eulerAngles = new Vector3(0f,0f,-90f);
                 newObject.GetComponent<Renderer>().material = Resources.Load("Materials/Material_002", typeof(Material)) as Material;
                 newObject.AddComponent<PlayerShape>();
+                newObject.AddComponent<Animator>();
+                newObject.GetComponent<Animator>().runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load("Animations/Plank/Plank"));
+                Destroy(interacted);
                 break;
         }
     }

@@ -55,7 +55,7 @@ public class Tile : MonoBehaviour {
         } else if (this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_AREA || this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_OVER) {
             this.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
         } else {
-            this.GetComponent<Renderer>().material.color = Color.white;
+            this.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_NORMAL;
         }
     }
 
