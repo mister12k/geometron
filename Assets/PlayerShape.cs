@@ -29,9 +29,6 @@ public class PlayerShape : MonoBehaviour {
         } else {
             movement = 3;
         }
-        if (this.name.Equals("Plank")) {
-            hasInteracted = true;
-        }
     }
 
     /**
@@ -187,12 +184,14 @@ public class PlayerShape : MonoBehaviour {
             interactTarget = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
             interactedShape.GetComponentInChildren<PlayerShape>().SetInteracting(this.gameObject);
             interactedShape.GetComponentInChildren<PlayerShape>().SetInteracted(true);
-        } else {
+        } else if(name != "Plank"){
             foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
                 if (g.transform.position == centre) {
                     interactedShape = g;
                 }
             }
+        } else {
+            interactTarget = targetTile;
         }
 
         GameObject.Find("Main Camera").GetComponent<UIManager>().SetButtons(hasMoved, hasInteracted,name);
@@ -387,7 +386,12 @@ public class PlayerShape : MonoBehaviour {
                 }
                 break;
 
-            case "Cube":
+            case "Plank":
+                GameObject buildTile = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                buildTile.transform.position = interactTarget;
+                buildTile.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_NORMAL;
+                buildTile.AddComponent<Tile>();
+                Destroy(this.transform.parent.gameObject);
                 break;
         }
 

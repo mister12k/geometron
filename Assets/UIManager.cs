@@ -58,29 +58,19 @@ public class UIManager : MonoBehaviour {
         } else {
             SetButtonMoveClicked();
         }
-
-
+        
         if (!hasInteracted) {
 
             interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
 
             selectedPosition = GameObject.Find("Selected").transform.position;
 
-            foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
-
-                if (g.transform.position == new Vector3(selectedPosition.x + Constants.TILE_GAP, selectedPosition.y, selectedPosition.z)) {
+            if (name != "Plank") {
+                if(Pathing.NeighbouringUnits(selectedPosition).Count > 0) {
                     interactableObjects = true;
                 }
-
-                if (g.transform.position == new Vector3(selectedPosition.x - Constants.TILE_GAP, selectedPosition.y, selectedPosition.z)) {
-                    interactableObjects = true;
-                }
-
-                if (g.transform.position == new Vector3(selectedPosition.x, selectedPosition.y, selectedPosition.z + Constants.TILE_GAP)) {
-                    interactableObjects = true;
-                }
-
-                if (g.transform.position == new Vector3(selectedPosition.x, selectedPosition.y, selectedPosition.z - Constants.TILE_GAP)) {
+            } else {
+                if(Pathing.NeighbouringSpaces(selectedPosition).Count > 0) {
                     interactableObjects = true;
                 }
             }
@@ -240,6 +230,9 @@ public class UIManager : MonoBehaviour {
             case "Pyramid":
                 interactText.text = "The pyramid will fly over the neighbouring figure, and those neighbouring it in a straight line, landing at the nearest space.";
                 break;
+            case "Plank":
+                interactText.text = "The plank will put itself over the neighbouring space, creating a new tile that can be moved to.";
+                break;
         }
     }
 
@@ -262,7 +255,7 @@ public class UIManager : MonoBehaviour {
             // First, get the neighbouring shapes of the shape's position
             lightedArea = Pathing.NeighbouringUnits(GameObject.Find("Selected").transform.position);
 
-            // Highlight the identified tiles which can be interacted with
+            // Highlight the identified shapes which can be interacted with
             foreach (var tile in lightedArea) {
                 foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
                     if (tile == current.transform.position) {
@@ -276,13 +269,13 @@ public class UIManager : MonoBehaviour {
             lightedArea = Pathing.NeighbouringSpaces(GameObject.Find("Selected").transform.position);
 
             // Highlight the identified spaces which can be interacted with
-            foreach (var tile in lightedArea) {
-                foreach (GameObject current in GameObject.FindGameObjectsWithTag("Tile")) {
-                    if (tile == current.transform.position) {
-                        current.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
-                        interactTiles.Add(current.GetComponent<Tile>());
-                    }
-                }
+            foreach (var space in lightedArea) {
+                GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                tile.transform.position = space;
+                tile.AddComponent<Tile>();
+
+                tile.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
+                interactTiles.Add(tile.GetComponent<Tile>());
             }
         }
     }
@@ -291,9 +284,16 @@ public class UIManager : MonoBehaviour {
     * 	Unhighlights the tiles which the shape currently selected can interact
     */
     public void UnhighlightInteractable() {
-        foreach (var tile in interactTiles) {
-            tile.GetComponent<Renderer>().material.color = Constants.COLOR_BUTTON_UNCLICKED;
+        if (shapeSelected != "Plank") {
+            foreach (var tile in interactTiles) {
+                tile.GetComponent<Renderer>().material.color = Constants.COLOR_BUTTON_UNCLICKED;
+            }
+        } else {
+            foreach (var tile in interactTiles) {
+                Destroy(tile.gameObject);
+            }
         }
+
         interactTiles.Clear();
     }
 }

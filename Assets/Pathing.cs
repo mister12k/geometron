@@ -193,37 +193,37 @@ public class Pathing{
         bool emptyRight = true, emptyLeft = true, emptyForward = true, emptyBackward = true;
 
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("Tile")) {
-            if (g.transform.position == new Vector3(centre.x + Constants.TILE_GAP, centre.y, centre.z)) {
+            if (g.transform.position == new Vector3(centre.x + Constants.TILE_GAP, centre.y - Constants.UNIT_TILE_DIFF, centre.z)) {
                 emptyRight = false;
             }
 
-            if (g.transform.position == new Vector3(centre.x - Constants.TILE_GAP, centre.y, centre.z)) {
+            if (g.transform.position == new Vector3(centre.x - Constants.TILE_GAP, centre.y - Constants.UNIT_TILE_DIFF, centre.z)) {
                 emptyLeft = false;
             }
 
-            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z + Constants.TILE_GAP)) {
+            if (g.transform.position == new Vector3(centre.x, centre.y - Constants.UNIT_TILE_DIFF, centre.z + Constants.TILE_GAP)) {
                 emptyForward = false;
             }
 
-            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z - Constants.TILE_GAP)) {
+            if (g.transform.position == new Vector3(centre.x, centre.y - Constants.UNIT_TILE_DIFF, centre.z - Constants.TILE_GAP)) {
                 emptyBackward = false;
             }
         }
 
         if (emptyRight) {
-            spaces.Add(new Vector3(centre.x + Constants.TILE_GAP, centre.y, centre.z));
+            spaces.Add(new Vector3(centre.x + Constants.TILE_GAP, centre.y - Constants.UNIT_TILE_DIFF, centre.z));
         }
 
         if (emptyLeft) {
-            spaces.Add(new Vector3(centre.x - Constants.TILE_GAP, centre.y, centre.z));
+            spaces.Add(new Vector3(centre.x - Constants.TILE_GAP, centre.y - Constants.UNIT_TILE_DIFF, centre.z));
         }
 
         if (emptyForward) {
-            spaces.Add(new Vector3(centre.x, centre.y, centre.z + Constants.TILE_GAP));
+            spaces.Add(new Vector3(centre.x, centre.y - Constants.UNIT_TILE_DIFF, centre.z + Constants.TILE_GAP));
         }
 
         if (emptyBackward) {
-            spaces.Add(new Vector3(centre.x, centre.y, centre.z - Constants.TILE_GAP));
+            spaces.Add(new Vector3(centre.x, centre.y - Constants.UNIT_TILE_DIFF, centre.z - Constants.TILE_GAP));
         }
 
         return spaces;

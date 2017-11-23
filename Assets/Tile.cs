@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class Tile : MonoBehaviour {
 
     private GameObject underPlane;
-	private 
 
     // Use this for initialization
     void Start () {
@@ -16,8 +15,9 @@ public class Tile : MonoBehaviour {
         transform.localScale = new Vector3(Constants.TILE_WIDTH, 1, Constants.TILE_WIDTH);
         underPlane  = GameObject.CreatePrimitive(PrimitiveType.Plane);
         underPlane.name = "Under";
+        underPlane.transform.parent = this.transform;
         underPlane.transform.position = new Vector3(this.transform.position.x, this.transform.position.y - 0.01f, this.transform.position.z);
-        underPlane.transform.localScale = new Vector3(Constants.TILE_WIDTH + 0.005f, 1 , Constants.TILE_WIDTH + 0.005f);
+        underPlane.transform.localScale = new Vector3(1 + 0.005f, 1 , 1 + 0.005f);
         underPlane.GetComponent<Renderer>().material = Resources.Load("Materials/Black", typeof(Material)) as Material;
         underPlane.hideFlags = HideFlags.HideInHierarchy;
     }
