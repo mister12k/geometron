@@ -19,6 +19,9 @@ public class UIManager : MonoBehaviour {
 	private List<Tile> moveArea;
     private List<Tile> interactTiles;
 
+    private bool movedShape;
+    private bool interactedShape;
+
     // Use this for initialization
     void Start () {
 		movePressed = false;
@@ -47,6 +50,8 @@ public class UIManager : MonoBehaviour {
      */
     public void SetButtons(bool hasMoved, bool hasInteracted, string name) {
         shapeSelected = name;
+        movedShape = hasMoved;
+        interactedShape = hasInteracted;
 
         Vector3 selectedPosition = new Vector3();
         bool interactableObjects = false;
@@ -105,7 +110,7 @@ public class UIManager : MonoBehaviour {
 	 */
     void OnMoveClick(){
         if (!(moveButton.image.color == Constants.COLOR_BUTTON_CLICKED && movePressed)) {
-            restoreInteractButton();
+            if(!interactedShape) restoreInteractButton();
             movePressed = !movePressed;
             if (movePressed) {
                 moveButton.image.color = Constants.COLOR_BUTTON_CLICKED;
@@ -123,7 +128,7 @@ public class UIManager : MonoBehaviour {
 	 */
     void OnInteractClick() {
         if (!(interactButton.image.color == Constants.COLOR_BUTTON_CLICKED && interactPressed)) {
-            restoreMoveButton();
+            if(!movedShape) restoreMoveButton();
             interactPressed = !interactPressed;
             if (interactPressed) {
                 interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
@@ -224,7 +229,7 @@ public class UIManager : MonoBehaviour {
                 break;
 
             case "Cube":
-                interactText.text = "The cube will stomp a neighbouring figure, causing unexpected results depending on the stomped shape.";
+                interactText.text = "The cube will stomp a neighbouring figure, causing different results depending on the stomped shape.";
                 break;
 
             case "Pyramid":

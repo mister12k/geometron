@@ -29,14 +29,14 @@ public class Pathing{
 				gScore.Add (start, 0);								// The cost of going from start to start is zero.
 				fScore.Add(start,Vector3.Distance(start, goal));	// For the first node, fscore value is completely heuristic.
 			} else {
-				gScore.Add (new Vector3(tile.transform.position.x,tile.transform.position.y + Constants.UNIT_TILE_DIFF, tile.transform.position.z), 1000f);
-				fScore.Add (new Vector3(tile.transform.position.x,tile.transform.position.y + Constants.UNIT_TILE_DIFF, tile.transform.position.z), 1000f);
+				gScore.Add (new Vector3(tile.transform.position.x,tile.transform.position.y + Constants.UNIT_TILE_DIFF, tile.transform.position.z), float.PositiveInfinity);
+				fScore.Add (new Vector3(tile.transform.position.x,tile.transform.position.y + Constants.UNIT_TILE_DIFF, tile.transform.position.z), float.PositiveInfinity);
 			}
 		}
 
 
 		while(openSet.Count != 0){
-			float min = 10000f;
+			float min = float.PositiveInfinity;
 			Vector3 current = new Vector3();
 			foreach (var pair in fScore){
 				if(openSet.Contains(pair.Key)){
@@ -182,6 +182,72 @@ public class Pathing{
         }
 
         return unit;
+    }
+
+    /**
+     *  Returns a list with vectors from the tiles that do not have a unit on top, that are neighbouring centre
+     */
+    public static List<Vector3> NeighbouringFree(Vector3 centre) {
+        List<Vector3> free = new List<Vector3>();
+        bool emptyRight = true, emptyLeft = true, emptyForward = true, emptyBackward = true,
+             tileRight = false, tileLeft = false, tileForward= false, tileBackward = false;
+
+
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Unit")) {
+
+            if (g.transform.position == new Vector3(centre.x + Constants.TILE_GAP, centre.y, centre.z)) {
+                emptyRight = false;
+            }
+
+            if (g.transform.position == new Vector3(centre.x - Constants.TILE_GAP, centre.y, centre.z)) {
+                emptyLeft = false;
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z + Constants.TILE_GAP)) {
+                emptyForward = false;
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y, centre.z - Constants.TILE_GAP)) {
+                emptyBackward = false;
+            }
+
+        }
+
+        foreach(GameObject g in GameObject.FindGameObjectsWithTag("Tile")) {
+            if (g.transform.position == new Vector3(centre.x + Constants.TILE_GAP, centre.y - Constants.UNIT_TILE_DIFF, centre.z)) {
+                tileRight = true;
+            }
+
+            if (g.transform.position == new Vector3(centre.x - Constants.TILE_GAP, centre.y - Constants.UNIT_TILE_DIFF, centre.z)) {
+                tileLeft = true;
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y - Constants.UNIT_TILE_DIFF, centre.z + Constants.TILE_GAP)) {
+                tileForward = true;
+            }
+
+            if (g.transform.position == new Vector3(centre.x, centre.y - Constants.UNIT_TILE_DIFF, centre.z - Constants.TILE_GAP)) {
+                tileBackward = true;
+            }
+        }
+
+        if (emptyRight && tileRight) {
+            free.Add(new Vector3(centre.x + Constants.TILE_GAP, centre.y , centre.z));
+        }
+
+        if (emptyLeft && tileLeft) {
+            free.Add(new Vector3(centre.x - Constants.TILE_GAP, centre.y , centre.z));
+        }
+
+        if (emptyForward && tileForward) {
+            free.Add(new Vector3(centre.x, centre.y , centre.z + Constants.TILE_GAP));
+        }
+
+        if (emptyBackward && tileBackward) {
+            free.Add(new Vector3(centre.x, centre.y , centre.z - Constants.TILE_GAP));
+        }
+
+        return free;
     }
 
     /**

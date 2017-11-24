@@ -24,10 +24,14 @@ public class PlayerShape : MonoBehaviour {
         hasMoved = false;
         hasInteracted = false;
         targetPath = new List<Vector3>();
-        if (this.name.Equals("Cube") || this.name.Equals("Plank")) {
+        if (this.name.Equals("Cube") || this.name.Equals("Plank") || this.name.Equals("Mini Cube")) {
             movement = 2;
         } else {
             movement = 3;
+        }
+
+        if(this.name.Equals("Mini Cube")) {
+            hasInteracted = true;
         }
     }
 
@@ -406,6 +410,7 @@ public class PlayerShape : MonoBehaviour {
      */
     public void TriggerStomp() {
         GameObject interacted = interactedShape.transform.GetChild(0).gameObject;
+        int i = 0;
 
         switch (interacted.name) {
             case "Sphere":
@@ -413,6 +418,32 @@ public class PlayerShape : MonoBehaviour {
                 break;
             case "Cube":
                 interacted.GetComponent<Animator>().SetBool("stomped", true);
+                break;
+            case "Plank":
+                interacted.GetComponent<Animator>().SetBool("stomped", true);
+                break;
+            case "Pyramid":
+                List<Vector3> freeTiles = Pathing.NeighbouringFree(interacted.transform.parent.position);
+                if(freeTiles.Count >= 2) {
+                    while(i < 2) {
+                        GameObject parent = new GameObject("Player");
+                        GameObject miniCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+                        parent.tag = "Unit";
+                        parent.transform.position = freeTiles[i];
+                        miniCube.name = "Mini Cube";
+                        miniCube.transform.parent = parent.transform;
+                        miniCube.transform.localPosition = new Vector3(0f,-0.25f,0f);
+                        miniCube.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+                        miniCube.GetComponent<Renderer>().material = Resources.Load("Materials/Material_002", typeof(Material)) as Material;
+                        miniCube.AddComponent<PlayerShape>();
+                        miniCube.AddComponent<Animator>();
+                        miniCube.GetComponent<Animator>().runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load("Animations/Mini Cube/Mini Cube"));
+                        
+                        i++;
+                    }
+                    Destroy(transform.parent.gameObject);
+                }
                 break;
         }
     }
@@ -438,6 +469,9 @@ public class PlayerShape : MonoBehaviour {
                 newObject.AddComponent<Animator>();
                 newObject.GetComponent<Animator>().runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load("Animations/Plank/Plank"));
                 Destroy(interacted);
+                break;
+            case "Plank":
+                interacted.GetComponent<Animator>().SetBool("stomped", false);
                 break;
         }
     }
