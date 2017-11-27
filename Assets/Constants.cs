@@ -14,6 +14,8 @@ public static class Constants{
 	public static Color32 COLOR_MOVE_OVER = new Color32 (0xFF, 0x69, 0xB4, 0xFF);
     public static Color32 COLOR_TILE_NORMAL = Color.white;
     public static Color32 COLOR_TILE_OVER = new Color32(0xBB, 0xBB, 0xBB, 0xFF);
+    public static Color32 COLOR_TILE_GOAL = new Color32(0xF8, 0x23, 0x23, 0xFF);
+    public static Color32 COLOR_TILE_PRESSURE = new Color32(0xFF,0xE3,0x00,0xFF);
     public static Color32 COLOR_INTERACT_AREA = new Color32(0x66,0xE5,0x47,0xFF);
     public static Color32 COLOR_INTERACT_OVER = new Color32(0xE5, 0x47, 0x66, 0xFF);
     public static Color32 COLOR_BUTTON_CLICKED = new Color32(0xC8, 0xC8, 0xC8, 0xFF);

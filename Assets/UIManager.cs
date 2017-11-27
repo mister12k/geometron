@@ -209,7 +209,13 @@ public class UIManager : MonoBehaviour {
 	 */
 	public void unhighlightMoveArea(){
 		foreach (var tile in moveArea) {
-			tile.GetComponent<Renderer> ().material.color = Constants.COLOR_BUTTON_UNCLICKED;
+            if (tile.GetComponent<Tile>().name == "Goal Tile") {
+                tile.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_GOAL;
+            } else if (tile.GetComponent<Tile>().name == "Pressure Tile") {
+                tile.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_PRESSURE;
+            } else {
+                tile.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_NORMAL;
+            }
 		}
 		moveArea.Clear ();
 	}
@@ -291,7 +297,7 @@ public class UIManager : MonoBehaviour {
     public void UnhighlightInteractable() {
         if (shapeSelected != "Plank") {
             foreach (var tile in interactTiles) {
-                tile.GetComponent<Renderer>().material.color = Constants.COLOR_BUTTON_UNCLICKED;
+                tile.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_NORMAL;
             }
         } else {
             foreach (var tile in interactTiles) {
