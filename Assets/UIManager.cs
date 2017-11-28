@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
@@ -9,6 +11,7 @@ public class UIManager : MonoBehaviour {
 
 	private Button moveButton;
     private Button interactButton;
+    private Button endButton;
 
     private bool movePressed;
     private bool interactPressed;
@@ -22,13 +25,35 @@ public class UIManager : MonoBehaviour {
     private bool movedShape;
     private bool interactedShape;
 
+    private Text turnsLeftNumber;
+    
+
     // Use this for initialization
     void Start () {
-		movePressed = false;
+        
+
+        movePressed = false;
         interactPressed = false;
 		moveButton = GameObject.Find ("MoveButton").GetComponent<Button>();
 		moveButton.GetComponent<Button>().onClick.AddListener(OnMoveClick);
         moveButton.gameObject.SetActive (false);
+
+        endButton = GameObject.Find("EndButton").GetComponent<Button>();
+        endButton.GetComponent<Button>().onClick.AddListener(OnEndClick);
+        endButton.gameObject.SetActive(false);
+
+        turnsLeftNumber = GameObject.Find("Turns Number").GetComponentInChildren<Text>();
+        switch (SceneManager.GetActiveScene().name){
+            case "Level 1":
+                turnsLeftNumber.text = "5";
+                break;
+            case "Level 2":
+                turnsLeftNumber.text = "5";
+                break;
+            case "Level 3":
+                turnsLeftNumber.text = "5";
+                break;
+        }
 
         interactButton = GameObject.Find("InteractButton").GetComponent<Button>();
         interactButton.GetComponent<Button>().onClick.AddListener(OnInteractClick);
@@ -42,6 +67,7 @@ public class UIManager : MonoBehaviour {
         moveArea = new List<Tile>();
         interactTiles = new List<Tile>();
     }
+
 
     /**
      *  Method which allows to reset the buttons on the UI depending on the state of the 
@@ -57,6 +83,7 @@ public class UIManager : MonoBehaviour {
         bool interactableObjects = false;
         moveButton.gameObject.SetActive(true);
         interactButton.gameObject.SetActive(true);
+        endButton.gameObject.SetActive(true);
 
         if (!hasMoved) {
             restoreMoveButton();
@@ -141,6 +168,25 @@ public class UIManager : MonoBehaviour {
             }
         }
     }
+
+    void OnEndClick() {
+        foreach(var unit in GameObject.FindGameObjectsWithTag("Unit")) {
+            unit.GetComponentInChildren<PlayerShape>().ResetTurnFlags();
+        }
+
+        turnsLeftNumber.text = (Int32.Parse(turnsLeftNumber.text) - 1).ToString();
+
+        SetButtons(GameObject.Find("Selected").GetComponentInChildren<PlayerShape>().HasMoved(), 
+                   GameObject.Find("Selected").GetComponentInChildren<PlayerShape>().HasInteracted(), 
+                   GameObject.Find("Selected").GetComponentInChildren<PlayerShape>().name);
+
+        if (turnsLeftNumber.text == "0") {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        
+    }
+
+
 
 	/**
 	 *  Sets the move button to its default state (colour and flags reset) and

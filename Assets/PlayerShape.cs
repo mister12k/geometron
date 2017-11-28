@@ -499,4 +499,20 @@ public class PlayerShape : MonoBehaviour {
     public int getMovement(){
 		return movement;
 	}
+
+    public bool HasInteracted() {
+        return hasInteracted;
+    }
+
+    public bool HasMoved() {
+        return hasMoved;
+    }
+
+    public void ResetTurnFlags() {
+        hasMoved = false;
+        hasInteracted = false;
+        if(name == "Mini Cube") {
+            hasInteracted = true;
+        }
+    }
 }
