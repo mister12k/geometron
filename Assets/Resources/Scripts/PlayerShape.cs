@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerShape : MonoBehaviour {
@@ -433,6 +432,7 @@ public class PlayerShape : MonoBehaviour {
                         parent.transform.position = freeTiles[i];
                         miniCube.name = "Mini Cube";
                         miniCube.transform.parent = parent.transform;
+                        miniCube.transform.eulerAngles = new Vector3(0f, 0f, 0f);
                         miniCube.transform.localPosition = new Vector3(0f,-0.25f,0f);
                         miniCube.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
                         miniCube.GetComponent<Renderer>().material = Resources.Load("Materials/Material_002", typeof(Material)) as Material;

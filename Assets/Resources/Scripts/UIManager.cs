@@ -26,7 +26,12 @@ public class UIManager : MonoBehaviour {
     private bool interactedShape;
 
     private Text turnsLeftNumber;
-    
+
+    private GameObject menu;
+    private Button restartButton;
+    private Button exitButton;
+
+    private GameObject alert;
 
     // Use this for initialization
     void Start () {
@@ -45,15 +50,22 @@ public class UIManager : MonoBehaviour {
         turnsLeftNumber = GameObject.Find("Turns Number").GetComponentInChildren<Text>();
         switch (SceneManager.GetActiveScene().name){
             case "Level 1":
-                turnsLeftNumber.text = "5";
+                turnsLeftNumber.text = Constants.TURNS_LEVEL1.ToString();
                 break;
             case "Level 2":
-                turnsLeftNumber.text = "5";
+                turnsLeftNumber.text = Constants.TURNS_LEVEL2.ToString();
                 break;
             case "Level 3":
-                turnsLeftNumber.text = "5";
+                turnsLeftNumber.text = Constants.TURNS_LEVEL3.ToString();
                 break;
         }
+
+        restartButton = GameObject.Find("RestartButton").GetComponent<Button>();
+        restartButton.GetComponent<Button>().onClick.AddListener(OnRestartClick);
+        exitButton = GameObject.Find("ExitButton").GetComponent<Button>();
+        exitButton.GetComponent<Button>().onClick.AddListener(OnExitClick);
+        menu = GameObject.Find("Menu");
+        menu.SetActive(false);
 
         interactButton = GameObject.Find("InteractButton").GetComponent<Button>();
         interactButton.GetComponent<Button>().onClick.AddListener(OnInteractClick);
@@ -63,6 +75,9 @@ public class UIManager : MonoBehaviour {
         interactText = GameObject.Find("InteractTip").GetComponentInChildren<Text>();
         interactTip = GameObject.Find("InteractTip");
         interactTip.SetActive(false);
+
+        alert = GameObject.Find("Alert");
+        alert.SetActive(false);
 
         moveArea = new List<Tile>();
         interactTiles = new List<Tile>();
@@ -146,6 +161,10 @@ public class UIManager : MonoBehaviour {
                 moveButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
                 unhighlightMoveArea();
             }
+        } else {
+            if (movedShape) {
+                StartCoroutine(ShowMessage("This shape has already moved this turn", 1.5f));
+            }
         }
 	}
 
@@ -166,6 +185,18 @@ public class UIManager : MonoBehaviour {
                 HideTip();
                 UnhighlightInteractable();
             }
+        } else {
+            if (shapeSelected != "Mini Cube") {
+                if (interactedShape) {
+                    StartCoroutine(ShowMessage("This shape has already interacted", 1.5f));
+                } else {
+                    if (!interactTip.activeInHierarchy) {
+                        StartCoroutine(ShowMessage("This shape can't interact in this position", 1.5f));
+                    }
+                }
+            } else {
+                StartCoroutine(ShowMessage("This shape doesn't have the ability to interact", 1.5f));
+            }
         }
     }
 
@@ -181,18 +212,36 @@ public class UIManager : MonoBehaviour {
                    GameObject.Find("Selected").GetComponentInChildren<PlayerShape>().name);
 
         if (turnsLeftNumber.text == "0") {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            menu.SetActive(true);
+
+            moveButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            interactButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            endButton.GetComponent<Button>().onClick.RemoveAllListeners();
         }
         
     }
 
+    void OnRestartClick() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void OnExitClick() {
+        SceneManager.LoadScene(0);
+    }
 
 
-	/**
+    IEnumerator ShowMessage(string message, float delay) {
+        alert.GetComponentInChildren<Text>().text = message;
+        alert.SetActive(true);
+        yield return new WaitForSeconds(delay);
+        alert.SetActive(false);
+    }
+
+    /**
 	 *  Sets the move button to its default state (colour and flags reset) and
 	 * 	unhighlights the move area
-	 */ 
-	public void restoreMoveButton() {
+	 */
+    public void restoreMoveButton() {
 		moveButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
 		unhighlightMoveArea ();
 		movePressed = false;

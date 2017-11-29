@@ -46,7 +46,7 @@ public class Tile : MonoBehaviour {
             if (goalOpened) {
                 foreach (var unit in GameObject.FindGameObjectsWithTag("Unit")) {
                     if (unit.transform.position == new Vector3(transform.position.x, transform.position.y + Constants.UNIT_TILE_DIFF, transform.position.z)) {
-                        SceneManager.LoadScene("Level 2");
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                     }
                 }
             }

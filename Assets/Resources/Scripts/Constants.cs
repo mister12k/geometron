@@ -22,9 +22,9 @@ public static class Constants{
     public static Color32 COLOR_BUTTON_UNCLICKED = Color.white;
 
 
-    public static int TURNS_LEVEL1 = 5;
+    public static int TURNS_LEVEL1 = 3;
     public static int TURNS_LEVEL2 = 5;
-    public static int TURNS_LEVEL3 = 5;
+    public static int TURNS_LEVEL3 = 6;
 
 
 }
