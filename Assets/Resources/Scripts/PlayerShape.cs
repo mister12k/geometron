@@ -394,6 +394,7 @@ public class PlayerShape : MonoBehaviour {
                 buildTile.transform.position = interactTarget;
                 buildTile.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_NORMAL;
                 buildTile.AddComponent<Tile>();
+                GameObject.Find("Main Camera").GetComponent<UIManager>().ClearUI();
                 Destroy(this.transform.parent.gameObject);
                 break;
         }
@@ -442,6 +443,7 @@ public class PlayerShape : MonoBehaviour {
                         
                         i++;
                     }
+                    GameObject.Find("Main Camera").GetComponent<UIManager>().ClearUI();
                     Destroy(transform.parent.gameObject);
                 }
                 break;

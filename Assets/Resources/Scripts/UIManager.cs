@@ -36,7 +36,6 @@ public class UIManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         
-
         movePressed = false;
         interactPressed = false;
 		moveButton = GameObject.Find ("MoveButton").GetComponent<Button>();
@@ -211,12 +210,16 @@ public class UIManager : MonoBehaviour {
                    GameObject.Find("Selected").GetComponentInChildren<PlayerShape>().HasInteracted(), 
                    GameObject.Find("Selected").GetComponentInChildren<PlayerShape>().name);
 
+        
+
         if (turnsLeftNumber.text == "0") {
             menu.SetActive(true);
 
             moveButton.GetComponent<Button>().onClick.RemoveAllListeners();
             interactButton.GetComponent<Button>().onClick.RemoveAllListeners();
             endButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        } else {
+            StartCoroutine(ShowMessage("Next turn", 1f));
         }
         
     }
@@ -226,7 +229,7 @@ public class UIManager : MonoBehaviour {
     }
 
     void OnExitClick() {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Main Menu");
     }
 
 
@@ -401,5 +404,16 @@ public class UIManager : MonoBehaviour {
         }
 
         interactTiles.Clear();
+    }
+
+    public void ClearUI() {
+        movePressed = false;
+        interactPressed = false;
+        moveButton.gameObject.SetActive(false);
+        endButton.gameObject.SetActive(false);
+        menu.SetActive(false);
+        interactButton.gameObject.SetActive(false);
+        interactTip.SetActive(false);
+        alert.SetActive(false);
     }
 }
