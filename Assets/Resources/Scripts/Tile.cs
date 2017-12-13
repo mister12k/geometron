@@ -8,9 +8,11 @@ public class Tile : MonoBehaviour {
 
     private GameObject underPlane;
     private bool isPressed;
+    private bool isGoalActive;
 
     // Use this for initialization
     void Start() {
+        isGoalActive = false;
 
         if (name != "Goal Tile" && name != "Pressure Tile") {
             this.name = "Tile";
@@ -44,6 +46,10 @@ public class Tile : MonoBehaviour {
                 }
             }
             if (goalOpened) {
+                if(this.GetComponent<Renderer>().material.color != Constants.COLOR_TILE_GOAL_ACTIVE && !isGoalActive) {
+                    this.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_GOAL_ACTIVE;
+                    isGoalActive = true;
+                }
                 foreach (var unit in GameObject.FindGameObjectsWithTag("Unit")) {
                     if (unit.transform.position == new Vector3(transform.position.x, transform.position.y + Constants.UNIT_TILE_DIFF, transform.position.z)) {
                         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -89,8 +95,10 @@ public class Tile : MonoBehaviour {
         } else if (this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_AREA || this.GetComponent<Renderer>().material.color == Constants.COLOR_INTERACT_OVER) {
             this.GetComponent<Renderer>().material.color = Constants.COLOR_INTERACT_AREA;
         } else {
-            if (name == "Goal Tile") {
+            if (name == "Goal Tile" && !isGoalActive) {
                 this.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_GOAL;
+            } else if (name == "Goal Tile" && isGoalActive) {
+                this.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_GOAL_ACTIVE;
             } else if (name == "Pressure Tile") {
                 this.GetComponent<Renderer>().material.color = Constants.COLOR_TILE_PRESSURE;
             } else {

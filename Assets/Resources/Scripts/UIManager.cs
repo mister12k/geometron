@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -35,7 +36,7 @@ public class UIManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        
+
         movePressed = false;
         interactPressed = false;
 		moveButton = GameObject.Find ("MoveButton").GetComponent<Button>();
@@ -70,6 +71,18 @@ public class UIManager : MonoBehaviour {
         interactButton.GetComponent<Button>().onClick.AddListener(OnInteractClick);
         interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
         interactButton.gameObject.SetActive(false);
+
+        interactButton.gameObject.AddComponent<EventTrigger>();
+
+        EventTrigger.Entry eventtypeenter = new EventTrigger.Entry();
+        eventtypeenter.eventID = EventTriggerType.PointerEnter;
+        eventtypeenter.callback.AddListener((eventData) => { OnInteractHoverEnter(); });
+        interactButton.GetComponent<EventTrigger>().triggers.Add(eventtypeenter);
+
+        EventTrigger.Entry eventtypeexit = new EventTrigger.Entry();
+        eventtypeexit.eventID = EventTriggerType.PointerExit;
+        eventtypeexit.callback.AddListener((eventData) => { OnInteractHoverExit(); });
+        interactButton.GetComponent<EventTrigger>().triggers.Add(eventtypeexit);
 
         interactText = GameObject.Find("InteractTip").GetComponentInChildren<Text>();
         interactTip = GameObject.Find("InteractTip");
@@ -141,7 +154,7 @@ public class UIManager : MonoBehaviour {
     public void SetButtonInteractClicked() {
         interactButton.image.color = Constants.COLOR_BUTTON_CLICKED;
         interactPressed = true;
-        HideTip();
+        HideInteractTip();
         UnhighlightInteractable();
     }
 
@@ -181,7 +194,7 @@ public class UIManager : MonoBehaviour {
                 HighlightInteractable();
             } else {
                 interactButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
-                HideTip();
+                HideInteractTip();
                 UnhighlightInteractable();
             }
         } else {
@@ -189,7 +202,7 @@ public class UIManager : MonoBehaviour {
                 if (interactedShape) {
                     StartCoroutine(ShowMessage("This shape has already interacted", 1.5f));
                 } else {
-                    if (!interactTip.activeInHierarchy) {
+                    if (interactTiles.Count == 0) {
                         StartCoroutine(ShowMessage("This shape can't interact in this position", 1.5f));
                     }
                 }
@@ -232,6 +245,13 @@ public class UIManager : MonoBehaviour {
         SceneManager.LoadScene("Main Menu");
     }
 
+    void OnInteractHoverEnter() {
+        ShowInteractTip();
+    }
+
+    void OnInteractHoverExit()  {
+        HideInteractTip();
+    }
 
     IEnumerator ShowMessage(string message, float delay) {
         alert.GetComponentInChildren<Text>().text = message;
@@ -256,7 +276,7 @@ public class UIManager : MonoBehaviour {
 	 */
     public void restoreInteractButton() {
         interactButton.image.color = Constants.COLOR_BUTTON_UNCLICKED;
-        HideTip();
+        HideInteractTip();
         UnhighlightInteractable();
         interactPressed = false;
     }
@@ -348,7 +368,7 @@ public class UIManager : MonoBehaviour {
     /**
      *  Hides the interact tip for the currently selected shape 
      */
-    void HideTip() {
+    void HideInteractTip() {
         interactTip.SetActive(false);
         interactTip.transform.GetChild(0).gameObject.SetActive(false);
     }
